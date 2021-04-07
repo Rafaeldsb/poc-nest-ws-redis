@@ -1,25 +1,22 @@
 
 <html>
   <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.4.0/socket.io.js" integrity="sha512-Y8KodDCDqst1e8z0EGKiqEQq3T8NszmgW2HvsC6+tlNw7kxYxHTLl5Iw/gqZj/6qhZdBt+jYyOsybgSAiB9OOA==" crossorigin="anonymous"></script>    <script>
-      const socket = io('http://localhost:3003');
+    <script>
+      const socket = new WebSocket('ws://localhost:3003');
       console.log('connecting...');
-      socket.open();
       const txid = prompt('TXID');
-      socket.on('connect', function() {
+      document.write('Listen TXID ' + txid);
+      socket.onopen = function() {
         console.log('Connected');
+        socket.onmessage = function(data) {
+          console.log(data);
+        }
 
-        socket.emit('pix', { txid });
-      });
-      socket.on('pix', function(data) {
-        console.log('pix', data);
-      });
-      socket.on('exception', function(data) {
-        console.log('event', data);
-      });
-      socket.on('disconnect', function() {
-        console.log('Disconnected');
-      });
+        socket.send(JSON.stringify({
+          event: 'pix-mock',
+          data: { txid }
+        }));
+    }
     </script>
   </head>
 
